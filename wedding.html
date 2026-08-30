@@ -808,111 +808,102 @@
             });
         })();
     </script>
-<!-- ==================== 音乐播放按钮 ==================== -->
-<button class="music-btn" id="musicBtn" title="播放音乐">🎵</button>
+<!-- ==================== 音乐播放控制 ==================== -->
+<!-- 新增：文字标识容器 -->
+<div class="music-control" id="musicControl">
+  <span class="music-icon">🎵</span>
+  <span class="music-text">播放音乐</span>
+</div>
 
-<!-- ==================== 音乐播放器 ==================== -->
+<!-- 音乐播放器 -->
 <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
 
 <style>
-    .music-btn {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 9999;
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: rgba(255, 248, 240, 0.95);
-        border: 1.5px solid #C9A96E;
-        font-size: 1.3rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 16px rgba(139, 94, 60, 0.15);
-        transition: all 0.3s;
-        -webkit-tap-highlight-color: transparent;
-        animation: musicPulse 2s infinite;
-    }
+  /* 新增：音乐控制的整体样式 */
+  .music-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    background: rgba(255, 248, 240, 0.9);
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid #C9A96E;
+    box-shadow: 0 2px 10px rgba(139, 94, 60, 0.1);
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    @keyframes musicPulse {
-        0%,
-        100% {
-            box-shadow: 0 4px 16px rgba(139, 94, 60, 0.15);
-        }
-        50% {
-            box-shadow: 0 4px 24px rgba(139, 94, 60, 0.35);
-        }
-    }
+  .music-control .music-icon {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+  }
 
-    .music-btn.playing {
-        animation: musicRotate 3s linear infinite;
-        background: rgba(139, 94, 60, 0.1);
-        border-color: #8B5E3C;
-    }
+  .music-control .music-text {
+    font-size: 13px;
+    color: #8B5E3C;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
 
-    @keyframes musicRotate {
-        from {
-            transform: rotate(0deg);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
+  /* 播放状态下的样式 */
+  .music-control.playing {
+    background: rgba(139, 94, 60, 0.1);
+    border-color: #8B5E3C;
+  }
 
-    .music-btn:active {
-        transform: scale(0.9);
-    }
+  .music-control.playing .music-text {
+    color: #5C4E3D;
+  }
+
+  /* 播放时音符旋转动画 */
+  .music-control.playing .music-icon {
+    animation: musicRotate 3s linear infinite;
+  }
+
+  @keyframes musicRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .music-control:active {
+    transform: scale(0.95);
+  }
 </style>
 
 <script>
-    (function() {
-        const musicBtn = document.getElementById('musicBtn');
-        const bgMusic = document.getElementById('bgMusic');
-        let isPlaying = false;
+  (function() {
+    const musicControl = document.getElementById('musicControl');
+    const musicIcon = musicControl.querySelector('.music-icon');
+    const musicText = musicControl.querySelector('.music-text');
+    const bgMusic = document.getElementById('bgMusic');
+    let isPlaying = false;
 
-        // 音频加载完成后再尝试自动播放
-        bgMusic.addEventListener('canplay', function() {
-            bgMusic.play().then(function() {
-                musicBtn.textContent = '🎶';
-                musicBtn.classList.add('playing');
-                isPlaying = true;
-            }).catch(function() {
-                // 自动播放被阻止，等待用户点击
-                console.log('自动播放被阻止，请点击按钮播放');
-            });
+    // 点击整个控制区域来切换播放/暂停
+    musicControl.addEventListener('click', function() {
+      if (isPlaying) {
+        bgMusic.pause();
+        musicIcon.textContent = '🎵';
+        musicText.textContent = '播放音乐';
+        musicControl.classList.remove('playing');
+        isPlaying = false;
+      } else {
+        bgMusic.play().then(function() {
+          musicIcon.textContent = '🎶';
+          musicText.textContent = '停止播放';
+          musicControl.classList.add('playing');
+          isPlaying = true;
+        }).catch(function(err) {
+          console.error('播放失败:', err);
+          alert('音乐播放失败，请点击屏幕任意位置后重试。');
         });
-
-        // 超时兜底：如果 canplay 迟迟不触发，2秒后尝试
-        setTimeout(function() {
-            if (!isPlaying) {
-                bgMusic.play().then(function() {
-                    musicBtn.textContent = '🎶';
-                    musicBtn.classList.add('playing');
-                    isPlaying = true;
-                }).catch(function() {});
-            }
-        }, 2000);
-
-        // 点击按钮切换播放/暂停
-        musicBtn.addEventListener('click', function() {
-            if (isPlaying) {
-                bgMusic.pause();
-                musicBtn.textContent = '🎵';
-                musicBtn.classList.remove('playing');
-                isPlaying = false;
-            } else {
-                bgMusic.play().then(function() {
-                    musicBtn.textContent = '🎶';
-                    musicBtn.classList.add('playing');
-                    isPlaying = true;
-                }).catch(function(err) {
-                    console.error('播放失败:', err);
-                });
-            }
-        });
-    })();
+      }
+    });
+  })();
 </script>
 </body>
 </html>
