@@ -808,14 +808,13 @@
             });
         })();
     </script>
-    <!-- ==================== 音乐播放按钮 ==================== -->
+<!-- ==================== 音乐播放按钮 ==================== -->
 <button class="music-btn" id="musicBtn" title="播放音乐">🎵</button>
 
 <!-- ==================== 音乐播放器 ==================== -->
 <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
 
 <style>
-    /* 音乐按钮样式 */
     .music-btn {
         position: fixed;
         bottom: 24px;
@@ -838,8 +837,13 @@
     }
 
     @keyframes musicPulse {
-        0%, 100% { box-shadow: 0 4px 16px rgba(139, 94, 60, 0.15); }
-        50% { box-shadow: 0 4px 24px rgba(139, 94, 60, 0.35); }
+        0%,
+        100% {
+            box-shadow: 0 4px 16px rgba(139, 94, 60, 0.15);
+        }
+        50% {
+            box-shadow: 0 4px 24px rgba(139, 94, 60, 0.35);
+        }
     }
 
     .music-btn.playing {
@@ -849,8 +853,12 @@
     }
 
     @keyframes musicRotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .music-btn:active {
@@ -859,31 +867,52 @@
 </style>
 
 <script>
-    const musicBtn = document.getElementById('musicBtn');
-    const bgMusic = document.getElementById('bgMusic');
-    let isPlaying = false;
+    (function() {
+        const musicBtn = document.getElementById('musicBtn');
+        const bgMusic = document.getElementById('bgMusic');
+        let isPlaying = false;
 
-    musicBtn.addEventListener('click', function() {
-        if (isPlaying) {
-            bgMusic.pause();
-            musicBtn.textContent = '🎵';
-            musicBtn.classList.remove('playing');
-            isPlaying = false;
-        } else {
-            bgMusic.play().then(() => {
+        // 音频加载完成后再尝试自动播放
+        bgMusic.addEventListener('canplay', function() {
+            bgMusic.play().then(function() {
                 musicBtn.textContent = '🎶';
                 musicBtn.classList.add('playing');
                 isPlaying = true;
-            }).catch(() => {});
-        }
-    });
+            }).catch(function() {
+                // 自动播放被阻止，等待用户点击
+                console.log('自动播放被阻止，请点击按钮播放');
+            });
+        });
 
-    // 尝试自动播放
-    bgMusic.play().then(() => {
-        musicBtn.textContent = '🎶';
-        musicBtn.classList.add('playing');
-        isPlaying = true;
-    }).catch(() => {});
+        // 超时兜底：如果 canplay 迟迟不触发，2秒后尝试
+        setTimeout(function() {
+            if (!isPlaying) {
+                bgMusic.play().then(function() {
+                    musicBtn.textContent = '🎶';
+                    musicBtn.classList.add('playing');
+                    isPlaying = true;
+                }).catch(function() {});
+            }
+        }, 2000);
+
+        // 点击按钮切换播放/暂停
+        musicBtn.addEventListener('click', function() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicBtn.textContent = '🎵';
+                musicBtn.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                bgMusic.play().then(function() {
+                    musicBtn.textContent = '🎶';
+                    musicBtn.classList.add('playing');
+                    isPlaying = true;
+                }).catch(function(err) {
+                    console.error('播放失败:', err);
+                });
+            }
+        });
+    })();
 </script>
 </body>
 </html>
