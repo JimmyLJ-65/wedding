@@ -915,5 +915,471 @@
     });
   })();
 </script>
+
+    <!-- ==================== 专属邀请函按钮 ==================== -->
+<button class="invitation-btn" id="invitationBtn" title="生成专属邀请函">✉️ 生成专属邀请函</button>
+
+<!-- ==================== 邀请函弹窗 ==================== -->
+<div class="invitation-overlay" id="invitationOverlay">
+    <div class="invitation-modal" id="invitationModal">
+        <!-- 关闭按钮 -->
+        <button class="invitation-close" id="invitationClose">✕</button>
+
+        <!-- 输入区 -->
+        <div class="invitation-input-area" id="invitationInputArea">
+            <h3>✉️ 生成专属邀请函</h3>
+            <p class="invitation-subtitle">输入亲友姓名，生成传统请柬</p>
+            <input
+                type="text"
+                id="guestName"
+                class="invitation-input"
+                placeholder="请输入姓名，如：张建国"
+                maxlength="10"
+            >
+            <div class="invitation-gender-group">
+                <button class="gender-btn active" data-gender="先生">先生</button>
+                <button class="gender-btn" data-gender="女士">女士</button>
+            </div>
+            <button class="invitation-generate-btn" id="invitationGenerate">生成请柬 ✨</button>
+        </div>
+
+        <!-- 生成的请柬图片 -->
+        <div class="invitation-card-wrapper" id="invitationCardWrapper" style="display:none;">
+            <canvas id="invitationCanvas"></canvas>
+            <div class="invitation-card-actions">
+                <button class="invitation-action-btn" id="invitationSave">💾 保存图片</button>
+                <button class="invitation-action-btn" id="invitationRedo">🔄 重新生成</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ========== 邀请函按钮 ========== */
+    .invitation-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 24px;
+        z-index: 9998;
+        padding: 12px 18px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #C9A96E, #B88645);
+        color: #fff;
+        border: none;
+        font-size: 0.9rem;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(139, 94, 60, 0.3);
+        transition: all 0.3s;
+        white-space: nowrap;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .invitation-btn:active {
+        transform: scale(0.95);
+        opacity: 0.9;
+    }
+
+    /* ========== 弹窗遮罩 ========== */
+    .invitation-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.65);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .invitation-overlay.show {
+        display: flex;
+    }
+
+    /* ========== 弹窗内容 ========== */
+    .invitation-modal {
+        background: #FFF8F0;
+        border-radius: 20px;
+        padding: 32px 24px 24px;
+        width: 90%;
+        max-width: 420px;
+        position: relative;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: modalIn 0.35s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .invitation-close {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        color: #999;
+        cursor: pointer;
+        padding: 4px 8px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .invitation-close:hover {
+        color: #333;
+    }
+
+    /* ========== 输入区 ========== */
+    .invitation-input-area {
+        text-align: center;
+    }
+
+    .invitation-input-area h3 {
+        font-size: 1.3rem;
+        color: #5D3A1A;
+        margin: 0 0 4px;
+    }
+
+    .invitation-subtitle {
+        font-size: 0.8rem;
+        color: #999;
+        margin: 0 0 20px;
+    }
+
+    .invitation-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1.5px solid #DDD;
+        border-radius: 12px;
+        font-size: 1rem;
+        text-align: center;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+        background: #fff;
+        color: #333;
+    }
+
+    .invitation-input:focus {
+        border-color: #C9A96E;
+    }
+
+    .invitation-gender-group {
+        display: flex;
+        gap: 12px;
+        margin: 16px 0;
+        justify-content: center;
+    }
+
+    .gender-btn {
+        padding: 10px 32px;
+        border-radius: 24px;
+        border: 1.5px solid #DDD;
+        background: #fff;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #666;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .gender-btn.active {
+        background: #C9A96E;
+        color: #fff;
+        border-color: #C9A96E;
+    }
+
+    .invitation-generate-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #C9A96E, #B88645);
+        color: #fff;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: all 0.3s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .invitation-generate-btn:active {
+        opacity: 0.85;
+        transform: scale(0.98);
+    }
+
+    /* ========== 请柬卡片 ========== */
+    .invitation-card-wrapper {
+        text-align: center;
+    }
+
+    #invitationCanvas {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .invitation-card-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        justify-content: center;
+    }
+
+    .invitation-action-btn {
+        padding: 10px 20px;
+        border-radius: 24px;
+        border: 1.5px solid #C9A96E;
+        background: #fff;
+        color: #C9A96E;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .invitation-action-btn:active {
+        background: #C9A96E;
+        color: #fff;
+    }
+
+    /* 手机端适配 */
+    @media (max-width: 480px) {
+        .invitation-btn {
+            bottom: 72px;
+            right: 12px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+        }
+        .invitation-modal {
+            padding: 24px 16px 16px;
+        }
+    }
+</style>
+
+<script>
+    (function() {
+        const invitationBtn = document.getElementById('invitationBtn');
+        const overlay = document.getElementById('invitationOverlay');
+        const closeBtn = document.getElementById('invitationClose');
+        const guestNameInput = document.getElementById('guestName');
+        const genderBtns = document.querySelectorAll('.gender-btn');
+        const generateBtn = document.getElementById('invitationGenerate');
+        const inputArea = document.getElementById('invitationInputArea');
+        const cardWrapper = document.getElementById('invitationCardWrapper');
+        const canvas = document.getElementById('invitationCanvas');
+        const saveBtn = document.getElementById('invitationSave');
+        const redoBtn = document.getElementById('invitationRedo');
+
+        let selectedGender = '先生';
+
+        // ========== 打开弹窗 ==========
+        invitationBtn.addEventListener('click', function() {
+            overlay.classList.add('show');
+            resetToInput();
+            setTimeout(() => guestNameInput.focus(), 300);
+        });
+
+        // ========== 关闭弹窗 ==========
+        function closeModal() {
+            overlay.classList.remove('show');
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closeModal();
+        });
+
+        // ========== 性别选择 ==========
+        genderBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                genderBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedGender = this.dataset.gender;
+            });
+        });
+
+        // ========== 生成请柬 ==========
+        generateBtn.addEventListener('click', function() {
+            const name = guestNameInput.value.trim();
+            if (!name) {
+                guestNameInput.style.borderColor = '#E74C3C';
+                guestNameInput.placeholder = '请输入姓名！';
+                setTimeout(() => {
+                    guestNameInput.style.borderColor = '#DDD';
+                    guestNameInput.placeholder = '请输入姓名，如：张建国';
+                }, 1500);
+                return;
+            }
+            drawInvitation(name, selectedGender);
+        });
+
+        guestNameInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                generateBtn.click();
+            }
+        });
+
+        // ========== 绘制请柬 ==========
+        function drawInvitation(name, gender) {
+            const dpr = window.devicePixelRatio || 1;
+            const width = 375;
+            const height = 600;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            // --- 背景 ---
+            ctx.fillStyle = '#FDF5EB';
+            ctx.fillRect(0, 0, width, height);
+
+            // 双层边框
+            ctx.strokeStyle = '#C9A96E';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(20, 20, width - 40, height - 40);
+
+            ctx.strokeStyle = '#D4B88C';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(28, 28, width - 56, height - 56);
+
+            // --- 顶部双喜 ---
+            ctx.fillStyle = '#C9A96E';
+            ctx.font = 'bold 26px "STSong", "SimSun", "Songti SC", "Noto Serif SC", serif';
+            ctx.textAlign = 'center';
+            const topY = 62;
+            ctx.fillText('囍', width / 2 - 38, topY);
+            ctx.fillText('囍', width / 2 + 38, topY);
+
+            // --- 标题 ---
+            ctx.fillStyle = '#8B5E3C';
+            ctx.font = 'bold 18px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
+            ctx.fillText('婚 礼 邀 请 函', width / 2, 90);
+
+            // --- 分隔线 ---
+            ctx.strokeStyle = '#C9A96E';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(80, 100);
+            ctx.lineTo(width - 80, 100);
+            ctx.stroke();
+
+            // --- 送呈 ---
+            ctx.fillStyle = '#5D3A1A';
+            ctx.font = '16px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('送    呈', width / 2, 130);
+
+            // --- 宾客姓名 ---
+            ctx.fillStyle = '#3A2010';
+            ctx.font = 'bold 22px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
+            const guestText = name + ' ' + gender + '（及全家）台启';
+            ctx.fillText(guestText, width / 2, 168);
+
+            // --- 分隔线 ---
+            ctx.strokeStyle = '#D4B88C';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(60, 185);
+            ctx.lineTo(width - 60, 185);
+            ctx.stroke();
+
+            // --- 正文（公历+农历） ---
+            ctx.fillStyle = '#5D3A1A';
+            ctx.font = '15px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
+
+            const contentLines = [
+                '谨定于',
+                '公历 2026年9月27日（星期日）',
+                '农历 丙午年八月初八',
+                '中午 12:00',
+                '在浦城县昇辉海鲜大酒店',
+                '举办婚礼答谢宴',
+            ];
+
+            let lineY = 218;
+            contentLines.forEach(function(line) {
+                ctx.fillText(line, width / 2, lineY);
+                lineY += 28;
+            });
+
+            // --- 新人 ---
+            ctx.fillStyle = '#8B5E3C';
+            ctx.font = 'bold 17px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
+            ctx.fillText('新郎：姜路    新娘：刘念', width / 2, lineY + 10);
+
+            // --- 敬邀 ---
+            lineY += 40;
+            ctx.fillStyle = '#5D3A1A';
+            ctx.font = '15px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
+            ctx.fillText('敬  邀  光  临', width / 2, lineY);
+
+            // --- 底部双喜 ---
+            lineY += 40;
+            ctx.fillStyle = '#C9A96E';
+            ctx.font = 'bold 26px "STSong", "SimSun", "Songti SC", "Noto Serif SC", serif';
+            ctx.fillText('囍', width / 2, lineY);
+
+            // --- 底部小字 ---
+            lineY += 25;
+            ctx.fillStyle = '#B8A080';
+            ctx.font = '10px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
+            ctx.fillText('姜路 & 刘念  ·  敬邀', width / 2, lineY);
+
+            // 显示卡片
+            inputArea.style.display = 'none';
+            cardWrapper.style.display = 'block';
+        }
+
+        // ========== 保存图片 ==========
+        saveBtn.addEventListener('click', function() {
+            if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+                canvas.toBlob(function(blob) {
+                    const file = new File([blob], '婚礼邀请函.png', { type: 'image/png' });
+                    navigator.share({
+                        files: [file],
+                        title: '婚礼邀请函',
+                        text: '姜路 & 刘念的婚礼邀请函'
+                    }).catch(function() {
+                        fallbackDownload();
+                    });
+                }, 'image/png');
+            } else {
+                fallbackDownload();
+            }
+        });
+
+        function fallbackDownload() {
+            const link = document.createElement('a');
+            link.download = '婚礼邀请函.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // ========== 重新生成 ==========
+        redoBtn.addEventListener('click', resetToInput);
+
+        function resetToInput() {
+            inputArea.style.display = 'block';
+            cardWrapper.style.display = 'none';
+            guestNameInput.value = '';
+            guestNameInput.style.borderColor = '#DDD';
+        }
+    })();
+</script>
+    
 </body>
 </html>
