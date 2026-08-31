@@ -1227,10 +1227,10 @@
         });
 
         // ========== 绘制森系请柬 ==========
-        function drawInvitation(name, gender) {
+               function drawInvitation(name, gender) {
             const dpr = window.devicePixelRatio || 1;
             const w = 375;
-            const h = 600;
+            const h = 640;
             canvas.width = w * dpr;
             canvas.height = h * dpr;
             canvas.style.width = w + 'px';
@@ -1239,11 +1239,11 @@
             const ctx = canvas.getContext('2d');
             ctx.scale(dpr, dpr);
 
-            // --- 背景：暖白纸色 ---
+            // --- 背景 ---
             ctx.fillStyle = '#FBF9F5';
             ctx.fillRect(0, 0, w, h);
 
-            // --- 外框：细叶绿 ---
+            // --- 外框 ---
             ctx.strokeStyle = '#A3B18A';
             ctx.lineWidth = 2;
             ctx.strokeRect(24, 24, w - 48, h - 48);
@@ -1256,49 +1256,48 @@
             ctx.setLineDash([]);
 
             // === 顶部装饰 ===
-            // 画小枝叶装饰
-            drawLeafySprig(ctx, w / 2, 58, '#A3B18A', 0.7);
+            drawLeafySprig(ctx, w / 2, 52, '#A3B18A', 0.7);
 
             // --- 标题 ---
             ctx.fillStyle = '#6B7D4F';
             ctx.font = '20px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
             ctx.textAlign = 'center';
-            ctx.fillText('婚 礼 邀 请 函', w / 2, 78);
+            ctx.fillText('婚 礼 邀 请 函', w / 2, 74);
 
             // --- 小装饰点 ---
             ctx.fillStyle = '#A3B18A';
             ctx.beginPath();
-            ctx.arc(w / 2 - 60, 63, 1.5, 0, Math.PI * 2);
+            ctx.arc(w / 2 - 60, 59, 1.5, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(w / 2 + 60, 63, 1.5, 0, Math.PI * 2);
+            ctx.arc(w / 2 + 60, 59, 1.5, 0, Math.PI * 2);
             ctx.fill();
 
             // --- 分隔线 ---
             ctx.strokeStyle = '#BCC9A8';
             ctx.lineWidth = 0.8;
             ctx.beginPath();
-            ctx.moveTo(80, 90);
-            ctx.lineTo(w - 80, 90);
+            ctx.moveTo(80, 86);
+            ctx.lineTo(w - 80, 86);
             ctx.stroke();
 
             // --- 送呈 ---
             ctx.fillStyle = '#7A8B65';
             ctx.font = '15px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
-            ctx.fillText('送    呈', w / 2, 118);
+            ctx.fillText('送    呈', w / 2, 128);
 
             // --- 宾客姓名 ---
             ctx.fillStyle = '#4A5D3A';
             ctx.font = 'bold 21px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
             const guestText = name + ' ' + gender + '（及全家）台启';
-            ctx.fillText(guestText, w / 2, 152);
+            ctx.fillText(guestText, w / 2, 162);
 
             // --- 分隔线 ---
             ctx.strokeStyle = '#D5DDCB';
             ctx.lineWidth = 0.5;
             ctx.beginPath();
-            ctx.moveTo(70, 168);
-            ctx.lineTo(w - 70, 168);
+            ctx.moveTo(70, 178);
+            ctx.lineTo(w - 70, 178);
             ctx.stroke();
 
             // --- 正文 ---
@@ -1308,13 +1307,13 @@
             const contentLines = [
                 '谨定于',
                 '公历 2026年9月27日（星期日）',
-                '农历 丙午年八月初八',
+                '农历 丙午年八月十七',
                 '中午 12:00',
                 '在浦城县昇辉海鲜大酒店',
                 '举办婚礼答谢宴',
             ];
 
-            let lineY = 198;
+            let lineY = 208;
             contentLines.forEach(function(line) {
                 ctx.fillText(line, w / 2, lineY);
                 lineY += 26;
@@ -1342,12 +1341,11 @@
             lineY += 30;
             drawLeafySprig(ctx, w / 2, lineY - 2, '#A3B18A', 0.5);
 
-            // --- 底部小字 ---
-            lineY += 22;
+            // --- 底部小字（贴底） ---
             ctx.fillStyle = '#B0BFA0';
             ctx.font = '10px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
-            ctx.fillText('姜路 & 刘念  ·  敬邀', w / 2, lineY);
-
+            ctx.fillText('姜路 & 刘念  ·  敬邀', w / 2, h - 30);
+        }
             // 显示卡片
             inputArea.style.display = 'none';
             cardWrapper.style.display = 'block';
