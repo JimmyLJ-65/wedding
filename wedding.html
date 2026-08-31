@@ -1352,70 +1352,117 @@
             inputArea.style.display = 'none';
             cardWrapper.style.display = 'block';
         }
-
-        // ========== 画小枝叶装饰 ==========
+        // ========== 画一排小枝叶装饰（12个） ==========
         function drawLeafySprig(ctx, x, y, color, scale) {
             ctx.save();
             ctx.translate(x, y);
             ctx.scale(scale, scale);
-            ctx.fillStyle = color;
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1.2;
 
-            // 中心茎
-            ctx.beginPath();
-            ctx.moveTo(0, 8);
-            ctx.quadraticCurveTo(0, 0, 0, -8);
-            ctx.stroke();
+            const count = 12;
+            const spacing = 18;
+            const totalWidth = (count - 1) * spacing;
+            const startX = -totalWidth / 2;
 
-            // 左叶
-            ctx.beginPath();
-            ctx.ellipse(-6, -2, 5, 2.5, -0.4, 0, Math.PI * 2);
-            ctx.fill();
+            for (let i = 0; i < count; i++) {
+                const cx = startX + i * spacing;
 
-            // 右叶
-            ctx.beginPath();
-            ctx.ellipse(6, 1, 5, 2.5, 0.4, 0, Math.PI * 2);
-            ctx.fill();
+                ctx.save();
+                ctx.translate(cx, 0);
 
-            // 左小叶
-            ctx.beginPath();
-            ctx.ellipse(-4, 5, 3.5, 1.8, -0.3, 0, Math.PI * 2);
-            ctx.fill();
+                // 中心茎
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(0, 8);
+                ctx.quadraticCurveTo(0, 0, 0, -8);
+                ctx.stroke();
 
-            // 右小叶
-            ctx.beginPath();
-            ctx.ellipse(4, 6, 3.5, 1.8, 0.3, 0, Math.PI * 2);
-            ctx.fill();
+                // 左叶
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.ellipse(-6, -2, 5, 2.5, -0.4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 右叶
+                ctx.beginPath();
+                ctx.ellipse(6, 1, 5, 2.5, 0.4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 左小叶
+                ctx.beginPath();
+                ctx.ellipse(-4, 5, 3.5, 1.8, -0.3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 右小叶
+                ctx.beginPath();
+                ctx.ellipse(4, 6, 3.5, 1.8, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            }
 
             ctx.restore();
         }
 
-        // ========== 保存图片 ==========
+               // ========== 保存图片（兼容所有浏览器） ==========
         saveBtn.addEventListener('click', function() {
-            if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+            // 方案1：尝试原生分享（iOS Safari / 部分安卓）
+            if (navigator.share && navigator.canShare) {
                 canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        fallbackSave();
+                        return;
+                    }
                     const file = new File([blob], '婚礼邀请函.png', { type: 'image/png' });
-                    navigator.share({
+                    const shareData = {
                         files: [file],
                         title: '婚礼邀请函',
-                        text: '姜路 & 刘念的婚礼邀请函'
-                    }).catch(function() {
-                        fallbackDownload();
-                    });
+                    };
+                    if (navigator.canShare(shareData)) {
+                        navigator.share(shareData).catch(function() {
+                            fallbackSave();
+                        });
+                    } else {
+                        fallbackSave();
+                    }
                 }, 'image/png');
             } else {
-                fallbackDownload();
+                fallbackSave();
             }
         });
 
-        function fallbackDownload() {
-            const link = document.createElement('a');
-            link.download = '婚礼邀请函.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+        function fallbackSave() {
+            // 方案2：在新窗口打开图片，用户可以长按保存
+            const dataUrl = canvas.toDataURL('image/png');
+            const newWindow = window.open('', '_blank');
+            if (newWindow) {
+                newWindow.document.write(
+                    '<!DOCTYPE html>' +
+                    '<html><head><meta charset="utf-8">' +
+                    '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">' +
+                    '<title>婚礼邀请函</title>' +
+                    '<style>' +
+                    '*{margin:0;padding:0;box-sizing:border-box;}' +
+                    'body{background:#F5F0E8;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;font-family:sans-serif;}' +
+                    'p{color:#7A8B65;margin-bottom:12px;font-size:14px;text-align:center;}' +
+                    'img{max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.15);}' +
+                    '@media(min-width:500px){img{max-width:375px;}}' +
+                    '</style></head><body>' +
+                    '<p>📸 长按图片 → 保存到相册</p>' +
+                    '<img src="' + dataUrl + '" alt="婚礼邀请函">' +
+                    '</body></html>'
+                );
+                newWindow.document.close();
+            } else {
+                // 方案3：弹窗被拦截，直接下载
+                const link = document.createElement('a');
+                link.download = '婚礼邀请函.png';
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         }
-
         // ========== 重新生成 ==========
         redoBtn.addEventListener('click', resetToInput);
 
