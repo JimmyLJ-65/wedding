@@ -1257,7 +1257,7 @@
 
             // === 顶部装饰 ===
             // 画小枝叶装饰
-            drawLeafySprig(ctx, w / 2, 52, '#A3B18A', 0.7);
+            drawLeafySprig(ctx, w / 2, 58, '#A3B18A', 0.7);
 
             // --- 标题 ---
             ctx.fillStyle = '#6B7D4F';
@@ -1340,7 +1340,7 @@
 
             // --- 底部装饰 ---
             lineY += 30;
-            drawLeafySprig(ctx, w / 2, lineY + 4, '#A3B18A', 0.5);
+            drawLeafySprig(ctx, w / 2, lineY - 2, '#A3B18A', 0.5);
 
             // --- 底部小字 ---
             lineY += 22;
@@ -1359,7 +1359,7 @@
             ctx.scale(scale, scale);
 
             const count = 12;
-            const spacing = 18;
+            const spacing = 27;
             const totalWidth = (count - 1) * spacing;
             const startX = -totalWidth / 2;
 
