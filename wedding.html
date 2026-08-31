@@ -1227,7 +1227,7 @@
         });
 
         // ========== 绘制森系请柬 ==========
-               function drawInvitation(name, gender) {
+ function drawInvitation(name, gender) {
             const dpr = window.devicePixelRatio || 1;
             const w = 375;
             const h = 640;
@@ -1258,46 +1258,46 @@
             // === 顶部装饰 ===
             drawLeafySprig(ctx, w / 2, 52, '#A3B18A', 0.7);
 
-            // --- 标题 ---
+             // --- 标题 ---
             ctx.fillStyle = '#6B7D4F';
             ctx.font = '20px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
             ctx.textAlign = 'center';
-            ctx.fillText('婚 礼 邀 请 函', w / 2, 74);
+            ctx.fillText('婚 礼 邀 请 函', w / 2, 94);
 
             // --- 小装饰点 ---
             ctx.fillStyle = '#A3B18A';
             ctx.beginPath();
-            ctx.arc(w / 2 - 60, 59, 1.5, 0, Math.PI * 2);
+            ctx.arc(w / 2 - 60, 79, 1.5, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(w / 2 + 60, 59, 1.5, 0, Math.PI * 2);
+            ctx.arc(w / 2 + 60, 79, 1.5, 0, Math.PI * 2);
             ctx.fill();
 
             // --- 分隔线 ---
             ctx.strokeStyle = '#BCC9A8';
             ctx.lineWidth = 0.8;
             ctx.beginPath();
-            ctx.moveTo(80, 86);
-            ctx.lineTo(w - 80, 86);
+            ctx.moveTo(80, 106);
+            ctx.lineTo(w - 80, 106);
             ctx.stroke();
 
             // --- 送呈 ---
             ctx.fillStyle = '#7A8B65';
             ctx.font = '15px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
-            ctx.fillText('送    呈', w / 2, 128);
+            ctx.fillText('送    呈', w / 2, 148);
 
             // --- 宾客姓名 ---
             ctx.fillStyle = '#4A5D3A';
             ctx.font = 'bold 21px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
             const guestText = name + ' ' + gender + '（及全家）台启';
-            ctx.fillText(guestText, w / 2, 162);
+            ctx.fillText(guestText, w / 2, 182);
 
             // --- 分隔线 ---
             ctx.strokeStyle = '#D5DDCB';
             ctx.lineWidth = 0.5;
             ctx.beginPath();
-            ctx.moveTo(70, 178);
-            ctx.lineTo(w - 70, 178);
+            ctx.moveTo(70, 198);
+            ctx.lineTo(w - 70, 198);
             ctx.stroke();
 
             // --- 正文 ---
@@ -1313,7 +1313,7 @@
                 '举办婚礼答谢宴',
             ];
 
-            let lineY = 208;
+            let lineY = 228;
             contentLines.forEach(function(line) {
                 ctx.fillText(line, w / 2, lineY);
                 lineY += 26;
@@ -1344,8 +1344,8 @@
             // --- 底部小字（贴底） ---
             ctx.fillStyle = '#B0BFA0';
             ctx.font = '10px "STKaiti", "KaiTi", "Kaiti SC", "Noto Serif SC", serif';
-            ctx.fillText('姜路 & 刘念  ·  敬邀', w / 2, h - 30);
-        }
+            ctx.fillText('姜路 & 刘念  ·  敬邀', w / 2, lineY + 30);
+        
             // 显示卡片
             inputArea.style.display = 'none';
             cardWrapper.style.display = 'block';
